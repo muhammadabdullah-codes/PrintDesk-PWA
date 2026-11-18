@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#17345b">
+<title>PrintDesk</title>
+<style>
+:root{--ink:#17263d;--blue:#2463df;--bg:#f3f6fa;--line:#dbe3ed;--muted:#64748b;--white:#fff}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.45 system-ui,-apple-system,"Segoe UI",Arial,sans-serif}
+header{background:#17345b;color:#fff;padding:17px 18px 16px;position:sticky;top:0;z-index:2;box-shadow:0 2px 12px #10243b18}
+.brand{font-weight:800;font-size:22px;letter-spacing:.2px}.tag{font-size:12px;color:#d8e5f7;margin-top:2px}
+main{width:min(760px,100%);margin:auto;padding:13px;display:grid;gap:12px}
+.card{background:var(--white);border:1px solid var(--line);border-radius:16px;padding:14px;box-shadow:0 3px 12px #14213b08}
+.card-title{font-weight:750;font-size:15px;margin:0 0 10px}
+textarea{display:block;width:100%;min-height:205px;resize:vertical;border:1px solid #c9d5e3;border-radius:12px;padding:13px;font:16px/1.6 system-ui,-apple-system,"Segoe UI",Arial,sans-serif;outline:none;background:#fff;color:#111}
+textarea:focus,select:focus{border-color:var(--blue);box-shadow:0 0 0 3px #2463df18}
+.row{display:flex;gap:9px;align-items:center}.row>*{min-width:0;flex:1}
+button,select{font:inherit;border-radius:11px;min-height:45px}
+button{border:0;padding:11px 14px;font-weight:700;cursor:pointer;touch-action:manipulation}
+.primary{background:var(--blue);color:white;width:100%;font-size:16px;min-height:52px}
+.secondary{background:#edf2f8;color:#23354d}.clear{background:#fff0f0;color:#a32929;flex:0 0 auto}
+select{width:100%;padding:9px 10px;border:1px solid #cbd5e1;background:#fff;color:var(--ink)}
+label{display:block;color:#53647a;font-weight:700;font-size:12px;margin:0 0 5px}
+.quick-settings{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.details{border-top:1px solid var(--line);margin-top:12px;padding-top:10px}
+summary{font-size:14px;font-weight:700;cursor:pointer;padding:3px 0;user-select:none}
+.advanced{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+.preview-shell{background:#e9eef5;border-radius:12px;padding:12px;overflow:auto}
+.paper{background:white;color:#111;margin:auto;box-shadow:0 2px 12px #15243a18;position:relative;width:min(100%,430px);aspect-ratio:210/297;padding:8%;overflow:hidden}
+.paper.landscape{aspect-ratio:297/210;max-width:560px}
+.paper-content{font-family:Arial,"Noto Naskh Arabic","Noto Nastaliq Urdu",sans-serif;font-size:14pt;line-height:1.5;white-space:pre-wrap;overflow-wrap:anywhere;word-break:normal;unicode-bidi:plaintext;min-height:100%;direction:auto}
+.placeholder{color:#98a3b2;font-size:14px}
+.preview-note{font-size:12px;color:var(--muted);text-align:center;margin:9px 2px 0}
+.status{font-size:12px;color:var(--muted);min-height:18px;margin-top:8px;text-align:center}
+@media(max-width:390px){main{padding:10px}.card{padding:12px}.paper{padding:7%}.row{gap:7px}}
+@media(min-width:700px){main{grid-template-columns:1fr 1fr;align-items:start}.editor,.settings,.preview,.action-card{grid-column:auto}.preview,.action-card{grid-column:1/-1}.paper{width:65%;min-width:300px}}
+@media print{header,main{display:none!important}}
+</style>
+<link rel="manifest" href="./manifest.json">
+<meta name="theme-color" content="#17345b">
+<link rel="apple-touch-icon" href="./icons/icon-192.png">
+</head>
+<body>
+<header><div class="brand">PrintDesk</div><div class="tag">Paste text · Check preview · Print</div></header>
+<main>
+<section class="card editor">
+  <h1 class="card-title">Paste customer text</h1>
+  <textarea id="text" dir="auto" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Paste or type the customer's text here…"></textarea>
+  <div class="row" style="margin-top:9px">
+    <button class="secondary" id="paste" type="button">Paste text</button>
+    <button class="clear" id="clear" type="button" aria-label="Clear text">Clear</button>
+  </div>
+</section>
+<section class="card settings">
+  <h2 class="card-title">Paper</h2>
+  <div class="quick-settings">
+    <div><label for="size">Paper size</label><select id="size"><option>A4</option><option>A5</option><option>A3</option><option>Letter</option><option>Legal</option><option>B5</option><option>Executive</option></select></div>
+    <div><label for="orientation">Direction</label><select id="orientation"><option value="portrait">Portrait</option><option value="landscape">Landscape</option></select></div>
+  </div>
+  <details class="details">
+    <summary>More settings</summary>
+    <div class="advanced">
+      <div><label for="margin">Margins</label><select id="margin"><option value="Normal">Normal</option><option value="Narrow">Narrow</option><option value="Wide">Wide</option></select></div>
+      <div><label for="alignment">Text alignment</label><select id="alignment"><option value="start">Auto</option><option value="left">Left</option><option value="right">Right</option><option value="center">Center</option><option value="justify">Justify</option></select></div>
+      <div><label for="spacing">Line spacing</label><select id="spacing"><option value="1.25">Compact</option><option value="1.5" selected>Normal</option><option value="1.8">Relaxed</option><option value="2">Double</option></select></div>
+      <div><label for="fontSize">Text size</label><select id="fontSize"><option value="12">Small · 12 pt</option><option value="14" selected>Normal · 14 pt</option><option value="16">Large · 16 pt</option><option value="18">Extra large · 18 pt</option></select></div>
+    </div>
+  </details>
+</section>
+<section class="card preview">
+  <h2 class="card-title">Preview</h2>
+  <div class="preview-shell"><div id="paper" class="paper"><div id="preview" class="paper-content placeholder">Your document will appear here.</div></div></div>
+  <p class="preview-note">Preview is an estimate. The phone's print screen confirms final page breaks.</p>
+</section>
+<section class="card action-card">
+  <button class="primary" id="print" type="button">Print / Save PDF</button>
+  <div class="status" id="status" aria-live="polite">Ready. Paste text above to begin.</div>
+</section>
+</main>
+<script>
+(() => {
+ const $=id=>document.getElementById(id);
+ const text=$('text'), preview=$('preview'), paper=$('paper'), status=$('status');
+ const dimensions={A4:[210,297],A5:[148,210],A3:[297,420],Letter:[216,279],Legal:[216,356],B5:[176,250],Executive:[184,267]};
+ const cssPageNames={A4:'A4',A5:'A5',A3:'A3',Letter:'letter',Legal:'legal',B5:'B5',Executive:'executive'};
+ const marginMm={Normal:15,Narrow:8,Wide:25};
+ const marginPreview={Normal:'7%',Narrow:'4%',Wide:'11%'};
+ function update(){
+   const s=$('size').value,o=$('orientation').value,d=dimensions[s];
+   paper.classList.toggle('landscape',o==='landscape');
+   paper.style.aspectRatio=(o==='portrait'?d[0]+'/'+d[1]:d[1]+'/'+d[0]);
+   paper.style.padding=marginPreview[$('margin').value];
+   preview.textContent=text.value||'Your document will appear here.';
+   preview.classList.toggle('placeholder',!text.value);
+   preview.style.textAlign=$('alignment').value;
+   preview.style.lineHeight=$('spacing').value;
+   preview.style.fontSize=$('fontSize').value+'pt';
+ }
+ text.addEventListener('input',update);
+ ['size','orientation','margin','alignment','spacing','fontSize'].forEach(id=>$(id).addEventListener('change',update));
+ $('clear').addEventListener('click',()=>{text.value='';update();text.focus();status.textContent='Text cleared.';});
+ $('paste').addEventListener('click',async()=>{
+   const previousText=text.value;
+   try{
+     let clip='';
+     try{clip=await navigator.clipboard.readText();}
+     catch(readTextError){
+       if(!navigator.clipboard||!navigator.clipboard.read)throw readTextError;
+       const items=await navigator.clipboard.read();
+       for(const item of items){
+         if(item.types.includes('text/plain')){clip=await (await item.getType('text/plain')).text();break;}
+       }
+     }
+     if(clip){text.value=clip;update();status.textContent='Text pasted.';}
+     else status.textContent='Clipboard is empty.';
+   }catch(e){
+     text.focus();
+     const pasted=document.execCommand('paste');
+     if(pasted&&text.value!==previousText){update();status.textContent='Text pasted.';}
+     else status.textContent='Clipboard access is blocked. Tap and hold inside the text box, then choose Paste.';
+   }
+ });
+ function escapeHtml(v){return v.replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+ function printDocument(){
+   if(!text.value.trim()){status.textContent='Please paste or type text first.';text.focus();return;}
+   const size=$('size').value,orientation=$('orientation').value,margin=marginMm[$('margin').value],align=$('alignment').value,spacing=$('spacing').value,fontSize=$('fontSize').value;
+   const pageSize=`${cssPageNames[size]} ${orientation}`;
+   const html=`<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>PrintDesk document</title><style>@page{size:${pageSize};margin:${margin}mm}*{box-sizing:border-box}html,body{margin:0;padding:0;color:#000;background:#fff}body{font-family:Arial,"Noto Naskh Arabic","Noto Nastaliq Urdu",sans-serif;font-size:${fontSize}pt;line-height:${spacing}}.doc{white-space:pre-wrap;overflow-wrap:anywhere;word-break:normal;text-align:${align};direction:auto;unicode-bidi:plaintext}</style></head><body><main class="doc">${escapeHtml(text.value)}</main><script>window.addEventListener('load',()=>setTimeout(()=>window.print(),250));<\/script></body></html>`;
+   let win;
+   try{win=window.open('','_blank');}catch(e){}
+   if(!win){status.textContent='Pop-up blocked. Allow pop-ups for PrintDesk, then try again.';return;}
+   win.document.open();win.document.write(html);win.document.close();status.textContent='Print window opened. Select your printer or Save as PDF.';
+ }
+ $('print').addEventListener('click',printDocument);
+ update();
+})();
+</script>
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./service-worker.js').catch(console.error);
+  });
+}
+</script>
+</body>
+</html>
